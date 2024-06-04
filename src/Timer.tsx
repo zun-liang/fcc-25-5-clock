@@ -28,6 +28,7 @@ interface TimeProps {
 }
 const Timer = ({ start, breakLength, sessionLength }: TimeProps) => {
   const [onBreak, setOnBreak] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(sessionLength * 60);
   const [sessionSeconds, setSessionSeconds] = useState(sessionLength * 60);
   const [breakSeconds, setBreakSeconds] = useState(breakLength * 60);
 
@@ -39,41 +40,37 @@ const Timer = ({ start, breakLength, sessionLength }: TimeProps) => {
     setBreakSeconds(breakLength * 60);
   }, [breakLength]);
 
-  const timeLeft = () => {
-    let minutes = Math.floor(sessionSeconds / 60)
+  const formatTimeLeft = () => {
+    const secondsLeft = timeLeft;
+    const minutes = Math.floor(secondsLeft / 60)
       .toString()
       .padStart(2, "0");
-    let seconds = (sessionSeconds % 60).toString().padStart(2, "0");
-    const formattedTimeLeft = minutes + ":" + seconds;
-    if (start && formattedTimeLeft === "00:00") {
-      setOnBreak(true);
-      minutes = Math.floor(breakSeconds / 60)
-        .toString()
-        .padStart(2, "0");
-      seconds = (breakSeconds % 60).toString().padStart(2, "0");
-    }
-    return formattedTimeLeft;
-
+    const seconds = (secondsLeft % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
   };
 
   useEffect(() => {
-    if (start && !onBreak) {
+    if (start) {
       setInterval(() => {
-        setSessionSeconds((prev) => prev - 1);
+        setTimeLeft((prev) => prev - 1);
       }, 1000);
-    } else if (start && onBreak) {
-      setInterval(() => {
-        setBreakSeconds(prev => prev - 1);
-      }, 1000)
     }
-  }, [start, onBreak]);
+  }, [start]);
+
+  useEffect(() => {
+    if (start && sessionSeconds === 0) {
+      setOnBreak(true);
+      setTimeLeft(breakSeconds);
+    } else if (start && breakSeconds === 0) {
+      setOnBreak(false);
+      setTimeLeft(sessionSeconds);
+    }
+  }, [start, sessionSeconds, breakSeconds]);
 
   return (
     <TimerContainer>
-      <StyledP id="timer-label">
-        {onBreak ? "Break" : "Session"}
-      </StyledP>
-      <Time id="time-left">{timeLeft()}</Time>
+      <StyledP id="timer-label">{onBreak ? "Break" : "Session"}</StyledP>
+      <Time id="time-left">{formatTimeLeft()}</Time>
     </TimerContainer>
   );
 };

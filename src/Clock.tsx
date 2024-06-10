@@ -6,7 +6,7 @@ import {
   faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import Timer from "./Timer";
@@ -32,7 +32,7 @@ const LengthContainer = styled.div`
   row-gap: 1rem;
   column-gap: 0.5rem;
 `;
-const StyledLabel = styled.label`
+const StyledLabel = styled.p`
   grid-column: 1 / -1;
   justify-self: center;
   font-size: 1.5rem;
@@ -41,21 +41,17 @@ const StyledLabel = styled.label`
     font-size: 2rem;
   }
 `;
-const StyledInput = styled.input`
-  border: none;
-  outline: none;
+const StyledLength = styled.p`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   background-color: orange;
   border-radius: 1rem;
   width: 5rem;
   height: 2.5rem;
   font-size: 1.5rem;
   text-align: center;
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  -moz-appearance: textfield;
 `;
 const Arrow = styled(FontAwesomeIcon)`
   font-size: 1.5rem;
@@ -71,33 +67,23 @@ const Icon = styled(FontAwesomeIcon)`
 `;
 
 const Clock = () => {
-  const [breakLength, setBreakLength] = useState(5);
   const [sessionLength, setSessionLength] = useState(25);
+  const [breakLength, setBreakLength] = useState(5);
+  const [sessionLeft, setSessionLeft] = useState(25 * 60);
+  const [breakLeft, setBreakLeft] = useState(5 * 60);
   const [start, setStart] = useState(false);
+  const [onBreak, setOnBreak] = useState(false);
+  const [playSound, setPlaySound] = useState(false);
   const handleStart = () => setStart(true);
   const handlePause = () => setStart(false);
   const handleReset = () => {
     setStart(false);
-    setBreakLength(5);
+    setOnBreak(false);
     setSessionLength(25);
-  };
-
-  const updateBreakLength = (e: React.FormEvent<HTMLInputElement>): void => {
-    const breakInput = e.currentTarget.value;
-    if (breakInput) {
-      setBreakLength(parseInt(breakInput));
-    } else {
-      setBreakLength(0);
-    }
-  };
-
-  const updateSessionLength = (e: React.FormEvent<HTMLInputElement>): void => {
-    const sessionInput = e.currentTarget.value;
-    if (sessionInput) {
-      setSessionLength(parseInt(sessionInput));
-    } else {
-      setSessionLength(0);
-    }
+    setBreakLength(5);
+    setSessionLeft(25 * 60);
+    setBreakLeft(5 * 60);
+    setPlaySound(false);
   };
 
   const incrementBreak = () => {
@@ -107,7 +93,7 @@ const Clock = () => {
   };
 
   const decrementBreak = () => {
-    if (breakLength >= 1) {
+    if (breakLength > 1) {
       setBreakLength((prev) => prev - 1);
     }
   };
@@ -119,68 +105,64 @@ const Clock = () => {
   };
 
   const decrementSession = () => {
-    if (sessionLength >= 1) {
+    if (sessionLength > 1) {
       setSessionLength((prev) => prev - 1);
     }
   };
+
+  useEffect(() => {
+    setSessionLeft(sessionLength * 60);
+  }, [sessionLength]);
+
+  useEffect(() => {
+    setBreakLeft(breakLength * 60);
+  }, [breakLength]);
 
   return (
     <ClockContainer>
       <Title>25 + 5 Clock</Title>
       <LengthContainer>
-        <StyledLabel htmlFor="break-length" id="break-label">
-          Break Length
-        </StyledLabel>
-        <Arrow icon={faArrowUp} id="break-increment" onClick={incrementBreak} />
-        <StyledInput
-          id="break-length"
-          name="break-length"
-          type="number"
-          min="1"
-          max="60"
-          value={breakLength}
-          onChange={updateBreakLength}
-        />
+        <StyledLabel id="break-label">Break Length</StyledLabel>
         <Arrow
           icon={faArrowDown}
           id="break-decrement"
           onClick={decrementBreak}
         />
+        <StyledLength id="break-length">{breakLength}</StyledLength>
+        <Arrow icon={faArrowUp} id="break-increment" onClick={incrementBreak} />
       </LengthContainer>
       <LengthContainer>
-        <StyledLabel htmlFor="session-length" id="session-label">
-          Session Length
-        </StyledLabel>
-        <Arrow
-          icon={faArrowUp}
-          id="session-increment"
-          onClick={incrementSession}
-        />
-        <StyledInput
-          id="session-length"
-          name="session-length"
-          type="number"
-          min="1"
-          max="60"
-          value={sessionLength}
-          onChange={updateSessionLength}
-        />
+        <StyledLabel id="session-label">Session Length</StyledLabel>
         <Arrow
           icon={faArrowDown}
           id="session-decrement"
           onClick={decrementSession}
         />
+        <StyledLength id="session-length">{sessionLength}</StyledLength>
+        <Arrow
+          icon={faArrowUp}
+          id="session-increment"
+          onClick={incrementSession}
+        />
       </LengthContainer>
       <Timer
         start={start}
+        onBreak={onBreak}
+        setOnBreak={setOnBreak}
         breakLength={breakLength}
         sessionLength={sessionLength}
+        sessionLeft={sessionLeft}
+        setSessionLeft={setSessionLeft}
+        breakLeft={breakLeft}
+        setBreakLeft={setBreakLeft}
+        setPlaySound={setPlaySound}
       />
       <IconsContainer>
         <Icon icon={faPlay} id="start_stop" onClick={handleStart} />
         <Icon icon={faPause} onClick={handlePause} />
         <Icon icon={faArrowsRotate} id="reset" onClick={handleReset} />
       </IconsContainer>
+      <audio id="beep" src="./assets/beep.wav"></audio>
     </ClockContainer>
   );
 };

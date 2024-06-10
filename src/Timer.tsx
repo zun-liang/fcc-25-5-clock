@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import styled from "styled-components";
 
 const TimerContainer = styled.div`
@@ -23,25 +23,69 @@ const Time = styled.p`
 
 interface TimeProps {
   start: boolean;
+  onBreak: boolean;
+  setOnBreak: Dispatch<SetStateAction<boolean>>;
   breakLength: number;
   sessionLength: number;
+  sessionLeft: number;
+  setSessionLeft: Dispatch<SetStateAction<number>>;
+  breakLeft: number;
+  setBreakLeft: Dispatch<SetStateAction<number>>;
+  setPlaySound: Dispatch<SetStateAction<boolean>>;
 }
-const Timer = ({ start, breakLength, sessionLength }: TimeProps) => {
-  const [onBreak, setOnBreak] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(sessionLength * 60);
-  const [sessionSeconds, setSessionSeconds] = useState(sessionLength * 60);
-  const [breakSeconds, setBreakSeconds] = useState(breakLength * 60);
+const Timer = ({
+  start,
+  onBreak,
+  setOnBreak,
+  breakLength,
+  sessionLength,
+  sessionLeft,
+  setSessionLeft,
+  breakLeft,
+  setBreakLeft,
+  setPlaySound
+}: TimeProps) => {
 
   useEffect(() => {
-    setSessionSeconds(sessionLength * 60);
-  }, [sessionLength]);
+    const interval = setInterval(() => {
+      if (start && !onBreak) {
+        setSessionLeft((prev) => {
+          if (prev > 0) {
+            return prev - 1;
+          } else {
+            return prev;
+          }
+        });
+      } else if (start && onBreak) {
+        setBreakLeft((prev) => {
+          if (prev > 0) {
+            return prev - 1;
+          } else {
+            return prev;
+          }
+        });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [start, onBreak]);
 
   useEffect(() => {
-    setBreakSeconds(breakLength * 60);
-  }, [breakLength]);
+    const interval = setInterval(() => {
+      if (start && sessionLeft === 0) {
+        setOnBreak(true);
+        setPlaySound(true);
+        setSessionLeft(sessionLength * 60);
+      } else if (start && breakLeft === 0) {
+        setOnBreak(false);
+        setPlaySound(true);
+        setBreakLeft(breakLength * 60);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [start, sessionLeft, breakLeft]);
 
   const formatTimeLeft = () => {
-    const secondsLeft = timeLeft;
+    const secondsLeft = onBreak ? breakLeft : sessionLeft;
     const minutes = Math.floor(secondsLeft / 60)
       .toString()
       .padStart(2, "0");
@@ -49,26 +93,12 @@ const Timer = ({ start, breakLength, sessionLength }: TimeProps) => {
     return `${minutes}:${seconds}`;
   };
 
-  useEffect(() => {
-    if (start) {
-      setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    }
-  }, [start]);
-
-  useEffect(() => {
-    if (start && sessionSeconds === 0) {
-      setOnBreak(true);
-      setTimeLeft(breakSeconds);
-    } else if (start && breakSeconds === 0) {
-      setOnBreak(false);
-      setTimeLeft(sessionSeconds);
-    }
-  }, [start, sessionSeconds, breakSeconds]);
+  console.log(
+    `start: ${start}, onBreak: ${onBreak}, sessionLeft: ${sessionLeft}, breakLeft: ${breakLeft}, formattedTimeLeft: ${formatTimeLeft()}`
+  );
 
   return (
-    <TimerContainer>
+    <TimerContainer id="timer">
       <StyledP id="timer-label">{onBreak ? "Break" : "Session"}</StyledP>
       <Time id="time-left">{formatTimeLeft()}</Time>
     </TimerContainer>

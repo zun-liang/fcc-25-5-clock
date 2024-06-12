@@ -9,8 +9,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
-import Timer from "./Timer";
-
 const ClockContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -65,6 +63,25 @@ const Icon = styled(FontAwesomeIcon)`
   margin: 1rem;
   cursor: pointer;
 `;
+const Timer = styled.div`
+  grid-column: 1 / 3;
+  width: 300px;
+  height: 200px;
+  border: 5px solid orange;
+  border-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+`;
+const StyledP = styled.p`
+  font-size: 2rem;
+  font-weight: bold;
+`;
+const Time = styled.p`
+  font-size: 4.5rem;
+`;
 
 const Clock = () => {
   const [sessionLength, setSessionLength] = useState(25);
@@ -118,6 +135,57 @@ const Clock = () => {
     setBreakLeft(breakLength * 60);
   }, [breakLength]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (start && !onBreak) {
+        setSessionLeft((prev) => {
+          if (prev > 0) {
+            return prev - 1;
+          } else {
+            return prev;
+          }
+        });
+      } else if (start && onBreak) {
+        setBreakLeft((prev) => {
+          if (prev > 0) {
+            return prev - 1;
+          } else {
+            return prev;
+          }
+        });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [start, onBreak]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (start && sessionLeft === 0) {
+        setOnBreak(true);
+        setPlaySound(true);
+        setSessionLeft(sessionLength * 60);
+      } else if (start && breakLeft === 0) {
+        setOnBreak(false);
+        setPlaySound(true);
+        setBreakLeft(breakLength * 60);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [start, sessionLeft, breakLeft]);
+
+  const formatTimeLeft = () => {
+    const secondsLeft = onBreak ? breakLeft : sessionLeft;
+    const minutes = Math.floor(secondsLeft / 60)
+      .toString()
+      .padStart(2, "0");
+    const seconds = (secondsLeft % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
+
+  console.log(
+    `start: ${start}, onBreak: ${onBreak}, sessionLeft: ${sessionLeft}, breakLeft: ${breakLeft}, formattedTimeLeft: ${formatTimeLeft()}`
+  );
+
   return (
     <ClockContainer>
       <Title>25 + 5 Clock</Title>
@@ -145,18 +213,10 @@ const Clock = () => {
           onClick={incrementSession}
         />
       </LengthContainer>
-      <Timer
-        start={start}
-        onBreak={onBreak}
-        setOnBreak={setOnBreak}
-        breakLength={breakLength}
-        sessionLength={sessionLength}
-        sessionLeft={sessionLeft}
-        setSessionLeft={setSessionLeft}
-        breakLeft={breakLeft}
-        setBreakLeft={setBreakLeft}
-        setPlaySound={setPlaySound}
-      />
+      <Timer id="timer">
+      <StyledP id="timer-label">{onBreak ? "Break" : "Session"}</StyledP>
+      <Time id="time-left">{formatTimeLeft()}</Time>
+    </Timer>
       <IconsContainer>
         <Icon icon={faPlay} id="start_stop" onClick={handleStart} />
         <Icon icon={faPause} onClick={handlePause} />

@@ -8,6 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import beep from "./assets/beep.wav";
 
 const ClockContainer = styled.div`
   display: grid;
@@ -90,7 +91,6 @@ const Clock = () => {
   const [breakLeft, setBreakLeft] = useState(5 * 60);
   const [start, setStart] = useState(false);
   const [onBreak, setOnBreak] = useState(false);
-  const [playSound, setPlaySound] = useState(false);
   const handleStart = () => setStart(true);
   const handlePause = () => setStart(false);
   const handleReset = () => {
@@ -100,7 +100,6 @@ const Clock = () => {
     setBreakLength(5);
     setSessionLeft(25 * 60);
     setBreakLeft(5 * 60);
-    setPlaySound(false);
   };
 
   const incrementBreak = () => {
@@ -160,13 +159,16 @@ const Clock = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
+      const audio = document.getElementById("beep") as HTMLAudioElement;
       if (start && sessionLeft === 0) {
+        audio.currentTime = 2;
+        audio.play();
         setOnBreak(true);
-        setPlaySound(true);
         setSessionLeft(sessionLength * 60);
       } else if (start && breakLeft === 0) {
+        audio.currentTime = 2;
+        audio.play();
         setOnBreak(false);
-        setPlaySound(true);
         setBreakLeft(breakLength * 60);
       }
     }, 1000);
@@ -214,15 +216,15 @@ const Clock = () => {
         />
       </LengthContainer>
       <Timer id="timer">
-      <StyledP id="timer-label">{onBreak ? "Break" : "Session"}</StyledP>
-      <Time id="time-left">{formatTimeLeft()}</Time>
-    </Timer>
+        <StyledP id="timer-label">{onBreak ? "Break" : "Session"}</StyledP>
+        <Time id="time-left">{formatTimeLeft()}</Time>
+      </Timer>
       <IconsContainer>
         <Icon icon={faPlay} id="start_stop" onClick={handleStart} />
         <Icon icon={faPause} onClick={handlePause} />
         <Icon icon={faArrowsRotate} id="reset" onClick={handleReset} />
       </IconsContainer>
-      <audio id="beep" src="./assets/beep.wav"></audio>
+      <audio id="beep" src={beep}></audio>
     </ClockContainer>
   );
 };

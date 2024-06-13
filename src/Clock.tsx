@@ -173,7 +173,7 @@ const Clock = () => {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [start, sessionLeft, breakLeft]);
+  }, [start, sessionLeft, breakLeft, sessionLength, breakLength]);
 
   const formatTimeLeft = () => {
     const secondsLeft = onBreak ? breakLeft : sessionLeft;

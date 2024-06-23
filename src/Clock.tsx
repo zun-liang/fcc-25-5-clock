@@ -52,6 +52,10 @@ const StyledLength = styled.p`
   font-size: 1.5rem;
   text-align: center;
 `;
+const StyledButton = styled.button`
+  border: none;
+  background-color: transparent;
+`;
 const Arrow = styled(FontAwesomeIcon)`
   font-size: 1.5rem;
   cursor: pointer;
@@ -193,36 +197,38 @@ const Clock = () => {
       <Title>25 + 5 Clock</Title>
       <LengthContainer>
         <StyledLabel id="break-label">Break Length</StyledLabel>
-        <Arrow
-          icon={faArrowDown}
-          id="break-decrement"
-          onClick={decrementBreak}
-        />
+        <StyledButton id="break-decrement" onClick={decrementBreak}>
+          <Arrow icon={faArrowDown} />
+        </StyledButton>
         <StyledLength id="break-length">{breakLength}</StyledLength>
-        <Arrow icon={faArrowUp} id="break-increment" onClick={incrementBreak} />
+        <StyledButton id="break-increment" onClick={incrementBreak}>
+          <Arrow icon={faArrowUp} />
+        </StyledButton>
       </LengthContainer>
       <LengthContainer>
         <StyledLabel id="session-label">Session Length</StyledLabel>
-        <Arrow
-          icon={faArrowDown}
-          id="session-decrement"
-          onClick={decrementSession}
-        />
+        <StyledButton id="session-decrement" onClick={decrementSession}>
+          <Arrow icon={faArrowDown} />
+        </StyledButton>
         <StyledLength id="session-length">{sessionLength}</StyledLength>
-        <Arrow
-          icon={faArrowUp}
-          id="session-increment"
-          onClick={incrementSession}
-        />
+        <StyledButton id="session-increment" onClick={incrementSession}>
+          <Arrow icon={faArrowUp} />
+        </StyledButton>
       </LengthContainer>
       <Timer id="timer">
         <StyledP id="timer-label">{onBreak ? "Break" : "Session"}</StyledP>
         <Time id="time-left">{formatTimeLeft()}</Time>
       </Timer>
       <IconsContainer>
-        <Icon icon={faPlay} id="start_stop" onClick={handleStart} />
-        <Icon icon={faPause} onClick={handlePause} />
-        <Icon icon={faArrowsRotate} id="reset" onClick={handleReset} />
+        <StyledButton id="start_stop" onClick={handleStart}>
+          <Icon icon={faPlay} />
+        </StyledButton>
+        <StyledButton onClick={handlePause}>
+          <Icon icon={faPause} />
+        </StyledButton>
+        <StyledButton id="reset" onClick={handleReset}>
+          <Icon icon={faArrowsRotate} />
+        </StyledButton>
       </IconsContainer>
       <audio id="beep" src={beep}></audio>
     </ClockContainer>

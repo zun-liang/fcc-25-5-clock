@@ -34,7 +34,7 @@ Users should be able to:
 <table>
   <tr>
     <td>
-      <img src="./public/screenshots/screenshot-mobile-default.png" alt="screenshot mobile default" style="width: 300px" />
+      <img src="./public/screenshots/screenshot-mobile-default.png" alt="screenshot mobile default" style="height: 300px" />
     </td>
   </tr>
   <tr>

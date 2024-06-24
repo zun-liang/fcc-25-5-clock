@@ -58,6 +58,7 @@ const StyledButton = styled.button`
 `;
 const Arrow = styled(FontAwesomeIcon)`
   font-size: 1.5rem;
+  color: black;
   cursor: pointer;
 `;
 const IconsContainer = styled.div`
@@ -67,6 +68,7 @@ const Icon = styled(FontAwesomeIcon)`
   width: 3rem;
   font-size: 2rem;
   margin: 1rem;
+  color: black;
   cursor: pointer;
 `;
 const Timer = styled.div`

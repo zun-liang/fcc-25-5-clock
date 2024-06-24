@@ -22,6 +22,12 @@ This is a solution to the [Build a 25 + 5 Clock](https://www.freecodecamp.org/le
 Users should be able to:
 
 - View the optimal layout for the site depending on their device's screen size
+- Set a session length between 1 and 60 minutes
+- Set a break length between 1 and 60 minutes
+- Start, pause, and resume the timer
+- Reset the timer to the initial session length
+- Hear an audible alert when the timer reaches zero
+- View the current countdown time in minutes and seconds format
 
 ### Screenshot
 
@@ -40,7 +46,7 @@ Users should be able to:
 
 ### Links
 
-- Live Site URL: [here](https://zun-liang.github.io/fcc-clock/)
+- Live Site URL: [here](https://zun-liang.github.io/fcc-25-5-clock/)
 
 ## My process
 
@@ -48,15 +54,15 @@ Users should be able to:
 
 - HTML
 - CSS
-- Flexbox
+- TypeScript
 - Mobile-first workflow
-- [React](https://reactjs.org/) - JS library
-- [Styled Components](https://styled-components.com/) - For styles
-- [Vite](https://vitejs.dev/)
+- React
+- Styled-components
+- Vite
 
 ### What I learned
 
-### Continued development
+- I was stuck for days because I didn't use buttons to wrap the icons and the tests won't work for my code.
 
 ### Helpful Resources
 

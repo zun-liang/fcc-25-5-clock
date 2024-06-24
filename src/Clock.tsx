@@ -31,16 +31,16 @@ const LengthContainer = styled.div`
   row-gap: 1rem;
   column-gap: 0.5rem;
 `;
-const StyledLabel = styled.p`
+const StyledLabel = styled.h2`
   grid-column: 1 / -1;
   justify-self: center;
   font-size: 1.5rem;
   font-weight: bold;
   @media (min-width: 1200px) {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 `;
-const StyledLength = styled.p`
+const StyledLength = styled.h3`
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -64,6 +64,7 @@ const IconsContainer = styled.div`
   grid-column: 1 / 3;
 `;
 const Icon = styled(FontAwesomeIcon)`
+  width: 3rem;
   font-size: 2rem;
   margin: 1rem;
   cursor: pointer;
@@ -80,11 +81,11 @@ const Timer = styled.div`
   justify-content: center;
   gap: 1rem;
 `;
-const StyledP = styled.p`
+const StyledH4 = styled.h4`
   font-size: 2rem;
   font-weight: bold;
 `;
-const Time = styled.p`
+const Time = styled.h5`
   font-size: 4.5rem;
 `;
 
@@ -95,9 +96,13 @@ const Clock = () => {
   const [breakLeft, setBreakLeft] = useState(5 * 60);
   const [start, setStart] = useState(false);
   const [onBreak, setOnBreak] = useState(false);
-  const handleStart = () => setStart(true);
-  const handlePause = () => setStart(false);
+
+  const handleStartStop = () => setStart((prev) => !prev);
+
   const handleReset = () => {
+    const audio = document.getElementById("beep") as HTMLAudioElement;
+    audio.pause();
+    audio.currentTime = 0;
     setStart(false);
     setOnBreak(false);
     setSessionLength(25);
@@ -141,21 +146,9 @@ const Clock = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (start && !onBreak) {
-        setSessionLeft((prev) => {
-          if (prev > 0) {
-            return prev - 1;
-          } else {
-            return prev;
-          }
-        });
+        setSessionLeft((prev) => (prev > 0 ? prev - 1 : prev));
       } else if (start && onBreak) {
-        setBreakLeft((prev) => {
-          if (prev > 0) {
-            return prev - 1;
-          } else {
-            return prev;
-          }
-        });
+        setBreakLeft((prev) => (prev > 0 ? prev - 1 : prev));
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -165,12 +158,10 @@ const Clock = () => {
     const interval = setInterval(() => {
       const audio = document.getElementById("beep") as HTMLAudioElement;
       if (start && sessionLeft === 0) {
-        audio.currentTime = 2;
         audio.play();
         setOnBreak(true);
         setSessionLeft(sessionLength * 60);
       } else if (start && breakLeft === 0) {
-        audio.currentTime = 2;
         audio.play();
         setOnBreak(false);
         setBreakLeft(breakLength * 60);
@@ -187,10 +178,6 @@ const Clock = () => {
     const seconds = (secondsLeft % 60).toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
-
-  console.log(
-    `start: ${start}, onBreak: ${onBreak}, sessionLeft: ${sessionLeft}, breakLeft: ${breakLeft}, formattedTimeLeft: ${formatTimeLeft()}`
-  );
 
   return (
     <ClockContainer>
@@ -216,15 +203,12 @@ const Clock = () => {
         </StyledButton>
       </LengthContainer>
       <Timer id="timer">
-        <StyledP id="timer-label">{onBreak ? "Break" : "Session"}</StyledP>
+        <StyledH4 id="timer-label">{onBreak ? "Break" : "Session"}</StyledH4>
         <Time id="time-left">{formatTimeLeft()}</Time>
       </Timer>
       <IconsContainer>
-        <StyledButton id="start_stop" onClick={handleStart}>
-          <Icon icon={faPlay} />
-        </StyledButton>
-        <StyledButton onClick={handlePause}>
-          <Icon icon={faPause} />
+        <StyledButton id="start_stop" onClick={handleStartStop}>
+          {start ? <Icon icon={faPause} /> : <Icon icon={faPlay} />}
         </StyledButton>
         <StyledButton id="reset" onClick={handleReset}>
           <Icon icon={faArrowsRotate} />

@@ -62,7 +62,9 @@ Users should be able to:
 
 ### What I learned
 
-- I was stuck for days because I didn't use buttons to wrap the icons and the tests won't work for my code.
+- How to use HTML5 audio in React
+- padStart
+- I was stuck for days because I didn't wrap the icons with buttons, and the tests wouldn't work for my code.
 
 ### Helpful Resources
 

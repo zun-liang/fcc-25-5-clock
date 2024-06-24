@@ -843,6 +843,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   background-color: transparent;
 `,Ji=Oe(gr)`
   font-size: 1.5rem;
+  color: black;
   cursor: pointer;
 `,xy=Oe.div`
   grid-column: 1 / 3;
@@ -850,6 +851,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   width: 3rem;
   font-size: 2rem;
   margin: 1rem;
+  color: black;
   cursor: pointer;
 `,Ey=Oe.div`
   grid-column: 1 / 3;
